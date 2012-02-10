@@ -16,7 +16,14 @@ class Geminabox < Sinatra::Base
   set :incremental_updates, false
   set :views, File.join(File.dirname(__FILE__), *%w[.. views])
   set :allow_replace, false
+  set :username, 'admin'
+  set :password, 'admin123'
   use Hostess
+
+  #setup HTTP Auth
+  use Rack::Auth::Basic, "Restricted Area" do |username, password|
+    [username, password] == [Geminabox.username,Geminabox.password]
+  end
 
   class << self
     def disallow_replace?

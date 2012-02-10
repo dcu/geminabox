@@ -14,9 +14,12 @@ It has no security, or authentication so you should handle this yourself.
 
 Create a config.ru as follows:
 
+    ENV['GEMBOX_SECUREPATH'] = '/K4jl/H6xf'
     require "rubygems"
     require "geminabox"
 
+    Geminabox.username = 'admin'
+    Geminabox.password = 'admin123'
     Geminabox.data = "/var/geminabox-data" # …or wherever
     run Geminabox
 

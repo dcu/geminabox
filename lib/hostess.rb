@@ -1,15 +1,18 @@
 require 'sinatra/base'
 
 class Hostess < Sinatra::Base
+  set :secure_path, ENV['GEMBOX_SECUREPATH'] || '/private'
+
   def serve
-    send_file(File.expand_path(File.join(Geminabox.data, *request.path_info)), :type => response['Content-Type'])
+    path = request.path_info.sub(Hostess.secure_path, "")
+    send_file(File.expand_path(File.join(Geminabox.data, *path)), :type => response['Content-Type'])
   end
 
   %w[/specs.4.8.gz
      /latest_specs.4.8.gz
      /prerelease_specs.4.8.gz
   ].each do |index|
-    get index do
+    get "#{Hostess.secure_path}#{index}" do
       content_type('application/x-gzip')
       serve
     end
@@ -19,7 +22,7 @@ class Hostess < Sinatra::Base
      /yaml.Z
      /Marshal.4.8.Z
   ].each do |deflated_index|
-    get deflated_index do
+    get "#{Hostess.secure_path}#{deflated_index}" do
       content_type('application/x-deflate')
       serve
     end
@@ -31,12 +34,12 @@ class Hostess < Sinatra::Base
      /latest_specs.4.8
      /prerelease_specs.4.8
   ].each do |old_index|
-    get old_index do
+    get "#{Hostess.secure_path}#{old_index}" do
       serve
     end
   end
 
-  get "/gems/*.gem" do
+  get "#{Hostess.secure_path}/gems/*.gem" do
     serve
   end
 end
